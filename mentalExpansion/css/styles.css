@@ -1,0 +1,54 @@
+
+:root {
+    --primary-color: #FFE9D0; 
+    --secondary-color: #FFFED3; 
+    --tertiary-color: #BBE9FF; 
+    --quaternary-color: #B1AFFF; 
+}
+
+* {
+    font-family: "Open Sans", sans-serif;
+    background-color: var(--secondary-color);
+}
+
+.header {
+    color: var(--quaternary-color);
+    text-decoration: italic;
+    text-align: center;
+}
+
+.body {
+    color: var(--quaternary-color);
+    text-align: center;
+    font-weight: 200;
+}
+
+a {
+    color: var(--quaternary-color);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--tertiary-color);
+    text-decoration: underline;
+}
+
+.motivational{
+    padding-top: 3rem;
+    padding-bottom: 1rem;
+    background-color: var(--tertiary-color);
+    width: 75%;
+    margin: 0 auto;
+}
+
+.motivational-gif {
+    width: 100%;
+    margin: 0 auto;
+    border: #B1AFFF solid 5px;
+}
+
+.motivational-text {
+   text-align: center;
+   background-color: var(--tertiary-color);
+   font-weight: 500;
+}
