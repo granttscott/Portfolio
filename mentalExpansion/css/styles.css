@@ -27,10 +27,38 @@ a {
     color: var(--quaternary-color);
     text-decoration: none;
 }
-
 a:hover {
     color: var(--tertiary-color);
-    text-decoration: underline;
+    text-decoration: none;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto;
+    width: 75%;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.item {
+    flex: 1 auto;
+    margin: 1rem;
+    padding: 1rem;
+    border: var(--quaternary-color) solid 5px;
+    background-color: var(--secondary-color);
+    text-align: center;
+    font-weight: 500;
+}
+.item:hover {
+    margin: 1rem;
+    padding: 1rem;
+    border: var(--quaternary-color) solid 5px;
+    background-color: var(--primary-color);
+    text-align: center;
+    font-weight: 500;
+}
+.item * {
+    background-color: transparent;
 }
 
 .motivational{
@@ -59,9 +87,22 @@ a:hover {
     margin: 0 auto;
     width: 55%;
     background-color: var(--secondary-color);
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 .product {
+    flex: 1 auto;
+    margin: 1rem;
+    padding: 1rem;
+    border: var(--quaternary-color) solid 5px;
+    background-color: var(--primary-color);
+    text-align: center;
+    font-weight: 500;
+}
+.product-description {
+    display: none;
+}
+.product-description:hover {
     margin: 1rem;
     padding: 1rem;
     border: var(--quaternary-color) solid 5px;
@@ -90,4 +131,48 @@ a:hover {
     background-color: var(--secondary-color);
     color: var(--quaternary-color);
     text-decoration: none;
+}
+.hoverhide:hover {
+    display: none;
+}
+
+.containercontainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+.container-design {
+    height: 748px;
+    width: 748px;
+    display: grid;
+    grid-template-columns: 40px 100px 234px 20px 374px;
+    grid-template-rows: 180px 271px 297px;
+    grid-gap: 9px;
+}
+.item-design {
+    background-color: var(--tertiary-color);
+}
+.red {
+    background-color: #E72F24;
+}
+.yellow {
+    background-color: #F9D01E;
+  }
+.black {
+    background-color: #232629;
+  }
+.blue {
+    background-color: #004592;
+  }
+.blank {
+    grid-column: span 2;
+}
+.blank2 {
+    grid-column: span 3;
+}
+.blank3 {
+    margin-bottom: -9px;
 }
