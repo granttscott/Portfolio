@@ -17,7 +17,7 @@
     text-align: center;
 }
 
-.body {
+body {
     color: var(--quaternary-color);
     text-align: center;
     font-weight: 200;
@@ -65,7 +65,7 @@ a:hover {
     padding-top: 3rem;
     padding-bottom: 1rem;
     background-color: var(--tertiary-color);
-    width: 75%;
+    /* width: 75%; */
     margin: 0 auto;
 }
 
