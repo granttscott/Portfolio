@@ -22,11 +22,25 @@
         </button>
     </div>
     <div class="highlight" style="position: relative;">
-        <pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">svg</span> <span class="na">xmlns</span><span class="o">=</span><span class="s">"http://www.w3.org/2000/svg"</span> <span class="na">width</span><span class="o">=</span><span class="s">"16"</span> <span class="na">height</span><span class="o">=</span><span class="s">"16"</span> <span class="na">fill</span><span class="o">=</span><span class="s">"currentColor"</span> <span class="na">class</span><span class="o">=</span><span class="s">"bi bi-0-square"</span> <span class="na">viewBox</span><span class="o">=</span><span class="s">"0 0 16 16"</span><span class="p">&gt;</span>
-    </span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">path</span> <span class="na">d</span><span class="o">=</span><span class="s">"M7.988 12.158c-1.851 0-2.941-1.57-2.941-3.99V7.84c0-2.408 1.101-3.996 2.965-3.996 1.857 0 2.935 1.57 2.935 3.996v.328c0 2.408-1.101 3.99-2.959 3.99M8 4.951c-1.008 0-1.629 1.09-1.629 2.895v.31c0 1.81.627 2.895 1.629 2.895s1.623-1.09 1.623-2.895v-.31c0-1.8-.621-2.895-1.623-2.895"</span><span class="p">/&gt;</span>
-    </span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">path</span> <span class="na">d</span><span class="o">=</span><span class="s">"M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm15 0a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"</span><span class="p">/&gt;</span>
-    </span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">svg</span><span class="p">&gt;</span></span></span></code></pre>
-    </div>
+        <p> To use previous step data, pass the `steps` object to the run() function
+        export default defineComponent({
+            async run({ steps, $ }) {
+              const trackingData = steps.trigger.event;
+              const orderId = steps.trigger.event.orderId;
+              console.log(orderId);
+              const accessToken = `${process.env.shopifyAccessToken}`;
+              const key = `${process.env.api_key}` 
+              const password = `${process.env.api_password}`
+              const getUrl = `https://${process.env.api_key}${process.env.api_password}@changecompanies.myshopify.com/admin/api/2023-10/orders/${orderId}/fulfillments.json?fulfillment_id`;
+        return[
+          {'getUrl': getUrl,
+          'accessToken': accessToken,
+          'key': key,
+          'password': password,
+          'orderId': orderId}
+        ]
+        
+            }});</p>
 </body>
 <style>
 .highlight pre code {
@@ -61,7 +75,7 @@ pre, code, kbd, samp {
     margin-bottom: 1rem;
     background-color: var(--bs-tertiary-bg);
     border-radius: var(--bs-border-radius);
-    width: 40%;
+    width: 80%;
 }
 *, *::before, *::after {
     box-sizing: border-box;

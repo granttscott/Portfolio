@@ -152,6 +152,29 @@ a:hover {
     grid-template-rows: 180px 271px 297px;
     grid-gap: 9px;
 }
+.rpsContainer {
+    display: flex;
+    justify-content: space-evenly; /* Spread items evenly */
+    align-items: flex-start;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    margin-top: 2rem;
+}
+.hand {
+    width: 30%; /* Increase width */
+    height: 30%; /* Increase height to maintain aspect ratio */
+    margin: 0 2.5%; /* Add some margin for spacing */
+    /* border-radius: 50%; Ensure circular shape */
+    
+     /* Hide overflow to maintain circular shape */
+}
+.hand-image {
+    border-radius: 50%;
+    /* width: 100%; Fill the parent div */
+    /* height: 100%; Fill the parent div */
+    /* object-fit: cover; Ensure the image covers the div */
+}
 .item-design {
     background-color: var(--tertiary-color);
 }
