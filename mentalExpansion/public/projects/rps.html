@@ -17,6 +17,9 @@
     .btn-primary:hover {
         background-color: var(--primary-color);
     }
+    .manual-select {
+                background-color: var(--primary-color);
+            }
 </style>
 
     <body>
@@ -28,18 +31,63 @@
         </div>
         <hr>
         <div class="rpsContainer">
-            <div class="hand"><img id="P1" class="hand-image" src="../images/rock2.png" alt="rock">
-            <h2>Player 1</h2></div>
-            <div class="hand"><img id="P2" class="hand-image" src="../images/rock2.png" alt="rock">
-            <h2>Player 2</h2></div>
+            <div class="hand">
+                <img id="P1" class="hand-image" src="../images/rock2.png" alt="rock">
+                <h2>Player 1</h2>
+                <label for="manualSelectP1">Manual Selection:</label>
+                <select id="manualSelectP1" name="manualSelectP1" class="manual-select" onchange="handleSelection(this)">
+                    <option value="" class="empty-selection">Select</option>
+                    <option value="rock">Rock</option>
+                    <option value="paper">Paper</option>
+                    <option value="scissors">Scissors</option>
+                </select>
+            </div>
+            <div class="hand">
+                <img id="P2" class="hand-image" src="../images/rock2.png" alt="rock">
+                <h2>Player 2</h2>
+                <label for="manualSelectP2">Manual Selection:</label>
+                <select id="manualSelectP2" name="manualSelectP2" class="manual-select" onchange="handleSelection(this)">
+                    <option value="" class="empty-selection">Select</option>
+                    <option value="rock">Rock</option>
+                    <option value="paper">Paper</option>
+                    <option value="scissors">Scissors</option>
+                </select>
+            </div>
         </div>
     </body>
     <script>
+            function handleSelection(selectElement) {
+            if (selectElement.id === 'manualSelectP1') {
+                selectElement.style.display = 'none';
+            }
+            if (selectElement.id === 'manualSelectP2') {
+                selectElement.style.display = 'none';
+            }
+            }
     function getRandomValue() {
         const options = [1, 2, 3]; 
         const options2 = [1, 2, 3];
-        const randomIndex = Math.floor(Math.random() * options.length);
-        const randomIndex2 = Math.floor(Math.random() * options2.length);
+        var randomIndex = Math.floor(Math.random() * options.length);
+        var randomIndex2 = Math.floor(Math.random() * options2.length);
+        var manualSelectP1 = document.getElementById('manualSelectP1');
+        if (manualSelectP1.value) {
+            if (manualSelectP1.value === 'rock') {
+                randomIndex = 0;
+            } else if (manualSelectP1.value === 'paper') {
+                randomIndex = 1;
+            } else if (manualSelectP1.value === 'scissors') {
+                randomIndex = 2;
+            }
+        }
+        if (manualSelectP2.value) {
+            if (manualSelectP2.value === 'rock') {
+                randomIndex2 = 0;
+            } else if (manualSelectP2.value === 'paper') {
+                randomIndex2 = 1;
+            } else if (manualSelectP2.value === 'scissors') {
+                randomIndex2 = 2;
+            }
+        }
 
         if (randomIndex == 0 && randomIndex2 == 2) {
             var winner = P1;
@@ -95,9 +143,22 @@
         }
         }
         else if (winner == "NA") {
+            if (randomIndex === 0) {
+                document.getElementById("P1").src = "../images/rock2.png";
+                document.getElementById("P2").src = "../images/rock2.png";
+            } else if (randomIndex === 1) {
+                document.getElementById("P1").src = "../images/paper2.png";
+                document.getElementById("P2").src = "../images/paper2.png";
+            } else {
+                document.getElementById("P1").src = "../images/scissors2.png";
+                document.getElementById("P2").src = "../images/scissors2.png";
+            }
             document.querySelector("div > h1").textContent = "It's a Tie.";
         }
-
+        document.getElementById('manualSelectP1').style.display = 'inline';
+        document.getElementById('manualSelectP2').style.display = 'inline';
+        manualSelectP1.value = '';
+        manualSelectP2.value = '';
     }
     </script>
     </html>
