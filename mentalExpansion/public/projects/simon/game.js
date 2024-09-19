@@ -10,7 +10,7 @@ function startGame() {
 userPattern = [];
 gamePattern = [];
 $("#hidden").css("display", "none");
-$("#level-title").css("color", "#FEF2BF");
+$("#level-title").removeClass("game-over");
 $("#level-title").text("Level 1");
     randomColor();
 
@@ -77,7 +77,7 @@ if (userPattern.length === gamePattern.length) {
         $("#level-title").css("color", "green");
         setTimeout(function() {
             $("#level-title").css("color", "#FEF2BF");
-            $("#level-title").text("Level " + (gamePattern.length + 1));
+            $("#level-title").text("Level " + (gamePattern.length));
         }, 1500);
         userPattern = [];
         setTimeout(function() {
@@ -85,11 +85,11 @@ if (userPattern.length === gamePattern.length) {
         }, 1000);a
     }
     else {
-        $("#level-title").text("Game Over, you made it to Level " + (gamePattern.length + 1) + ".");
+        $("#level-title").text("Game Over, you made it to Level " + (gamePattern.length) + ".");
         $("#level-title").addClass("game-over");
         $("#hidden").css("display", "block");
         if (gamePattern.length > highScore) {
-            highScore = gamePattern.length + 1;
+            highScore = gamePattern.length;
             $("#score").text("High Score: " + highScore);
         }
     }
