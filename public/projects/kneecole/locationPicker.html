@@ -18,56 +18,68 @@
             background-color: var(--primary-color);
         }
         .manual-select {
-                    background-color: var(--primary-color);
-                }
+            background-color: var(--primary-color);
+        }
     </style>
 
     <body>
         <button onclick="window.location.href = '../../index.html';" class="back">Home</button>
         <header><h1 class="header">Location Picker</h1></header>
-    <input type="file" id="csvFileInput" accept=".csv" value="Upload CSV"/>
-    <!-- <button onclick="processCSV()" class="btn-primary">Upload CSV</button> -->
-    <a id="downloadLink" style="display:none;">Download Processed CSV</a>
+        <input type="file" id="excelFileInput" accept=".xlsx" />
+        <button onclick="processExcel()" class="btn-primary">Process</button>
+        <a id="downloadLink" style="display:none;">Download Processed CSV</a>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+        <script>
+            function processExcel() {
+                const input = document.getElementById('excelFileInput');
+                if (!input.files.length) {
+                    alert('Please select an excel file to upload.');
+                    return;
+                }
 
-    <script>
-        function processCSV() {
-            const input = document.getElementById('csvFileInput');
-            if (!input.files.length) {
-                alert('Please select a CSV file to upload.');
-                return;
+                const file = input.files[0];
+                processData(file);
             }
 
-            const file = input.files[0];
-            const reader = new FileReader();
+            function processData(excelFile) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[sheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-            reader.onload = function(e) {
-                const text = e.target.result;
-                const processedData = processData(text);
-                downloadCSV(processedData);
-            };
+                    const emailLocationsMap = new Map();
 
-            reader.readAsText(file);
-        }
+                    // Skip header row
+                    jsonData.slice(1).forEach(row => {
+                        if (row.length >= 2) {
+                            const location = row[0].trim();
+                            const email = row[1].trim();
+                            if (!emailLocationsMap.has(email)) {
+                                emailLocationsMap.set(email, []);
+                            }
+                            emailLocationsMap.get(email).push(location);
+                        }
+                    });
 
-        function processData(csvText) {
-            const rows = csvText.split('\n');
-            const processedRows = rows.map(row => {
-                const columns = row.split(',');
-                // Example processing: convert all text to uppercase
-                return columns.map(col => col.toUpperCase()).join(',');
-            });
-            return processedRows.join('\n');
-        }
+                    const resultData = [['Location', 'Created By']];
+                    emailLocationsMap.forEach((locations, email) => {
+                        const sampleSize = Math.ceil(locations.length * 0.1);
+                        const sampledLocations = locations.sort(() => 0.5 - Math.random()).slice(0, sampleSize);
+                        sampledLocations.forEach(location => {
+                            resultData.push([location, email]);
+                        });
+                    });
 
-        function downloadCSV(data) {
-            const blob = new Blob([data], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const downloadLink = document.getElementById('downloadLink');
-            downloadLink.href = url;
-            downloadLink.download = 'processed_data.csv';
-            downloadLink.style.display = 'block';
-            downloadLink.innerText = 'Download Processed CSV';
-        }
-    </script>
+                    const newWorksheet = XLSX.utils.aoa_to_sheet(resultData);
+                    const newWorkbook = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, 'Sampled Data');
+                    XLSX.writeFile(newWorkbook, 'sampled_data.xlsx');
+                };
+                reader.readAsArrayBuffer(excelFile);
+            }
+        </script>
     </body>
 </html>
