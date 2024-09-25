@@ -1,0 +1,201 @@
+
+:root {
+    --primary-color: #FFE9D0; 
+    --secondary-color: #FFFED3; 
+    --tertiary-color: #BBE9FF; 
+    --quaternary-color: #B1AFFF; 
+}
+
+* {
+    font-family: "Open Sans", sans-serif;
+    background-color: var(--secondary-color);
+}
+
+.header {
+    color: var(--quaternary-color);
+    text-decoration: italic;
+    text-align: center;
+}
+
+body {
+    color: var(--quaternary-color);
+    text-align: center;
+    font-weight: 200;
+}
+
+a {
+    color: var(--quaternary-color);
+    text-decoration: none;
+}
+a:hover {
+    color: var(--tertiary-color);
+    text-decoration: none;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto;
+    width: 75%;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.item {
+    flex: 1 auto;
+    margin: 1rem;
+    padding: 1rem;
+    border: var(--quaternary-color) solid 5px;
+    background-color: var(--secondary-color);
+    text-align: center;
+    font-weight: 500;
+}
+.item:hover {
+    margin: 1rem;
+    padding: 1rem;
+    border: var(--quaternary-color) solid 5px;
+    background-color: var(--primary-color);
+    text-align: center;
+    font-weight: 500;
+}
+.item * {
+    background-color: transparent;
+}
+
+.motivational{
+    padding-top: 3rem;
+    padding-bottom: 1rem;
+    background-color: var(--tertiary-color);
+    /* width: 75%; */
+    margin: 0 auto;
+}
+
+.motivational-gif {
+    width: 100%;
+    margin: 0 auto;
+    border: #B1AFFF solid 5px;
+}
+
+.motivational-text {
+   text-align: center;
+   background-color: var(--tertiary-color);
+   font-weight: 500;
+}
+
+.products-container {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto;
+    width: 55%;
+    background-color: var(--secondary-color);
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.product {
+    flex: 1 auto;
+    margin: 1rem;
+    padding: 1rem;
+    border: var(--quaternary-color) solid 5px;
+    background-color: var(--primary-color);
+    text-align: center;
+    font-weight: 500;
+}
+.product-description {
+    display: none;
+}
+.product-description:hover {
+    margin: 1rem;
+    padding: 1rem;
+    border: var(--quaternary-color) solid 5px;
+    background-color: var(--primary-color);
+    text-align: center;
+    font-weight: 500;
+}
+.product-content-name {
+    font-size: 1.5rem;
+    background-color: var(--primary-color);
+}
+.product-content {
+    font-size: 1rem;
+    background-color: var(--tertiary-color);
+}
+.btn-primary {
+    background-color: var(--quaternary-color);
+    color: var(--secondary-color);
+    padding: 0.5rem;
+    border: none;
+    border-radius: 5px;
+    font-weight: 500;
+    text-decoration: none;
+}
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+    color: var(--quaternary-color);
+    text-decoration: none;
+}
+.hoverhide:hover {
+    display: none;
+}
+
+.containercontainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+.container-design {
+    height: 748px;
+    width: 748px;
+    display: grid;
+    grid-template-columns: 40px 100px 234px 20px 374px;
+    grid-template-rows: 180px 271px 297px;
+    grid-gap: 9px;
+}
+.rpsContainer {
+    display: flex;
+    justify-content: space-evenly; /* Spread items evenly */
+    align-items: flex-start;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    margin-top: 2rem;
+}
+.hand {
+    width: 30%; /* Increase width */
+    height: 30%; /* Increase height to maintain aspect ratio */
+    margin: 0 2.5%; /* Add some margin for spacing */
+    /* border-radius: 50%; Ensure circular shape */
+    
+     /* Hide overflow to maintain circular shape */
+}
+.hand-image {
+    border-radius: 50%;
+    /* width: 100%; Fill the parent div */
+    /* height: 100%; Fill the parent div */
+    /* object-fit: cover; Ensure the image covers the div */
+}
+.item-design {
+    background-color: var(--tertiary-color);
+}
+.red {
+    background-color: #E72F24;
+}
+.yellow {
+    background-color: #F9D01E;
+  }
+.black {
+    background-color: #232629;
+  }
+.blue {
+    background-color: #004592;
+  }
+.blank {
+    grid-column: span 2;
+}
+.blank2 {
+    grid-column: span 3;
+}
+.blank3 {
+    margin-bottom: -9px;
+}
