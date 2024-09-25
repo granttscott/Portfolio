@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../css/styles.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+        <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> -->
+        <title>G-Port</title>
+    </head>
+    <style>
+        .btn-primary {
+            width: 100px;
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-color);
+        }
+        .manual-select {
+                    background-color: var(--primary-color);
+                }
+    </style>
+
+    <body>
+        <button onclick="window.location.href = '../../index.html';" class="back">Home</button>
+        <header><h1 class="header">Location Picker</h1></header>
+    <input type="file" id="csvFileInput" accept=".csv" value="Upload CSV"/>
+    <!-- <button onclick="processCSV()" class="btn-primary">Upload CSV</button> -->
+    <a id="downloadLink" style="display:none;">Download Processed CSV</a>
+
+    <script>
+        function processCSV() {
+            const input = document.getElementById('csvFileInput');
+            if (!input.files.length) {
+                alert('Please select a CSV file to upload.');
+                return;
+            }
+
+            const file = input.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const processedData = processData(text);
+                downloadCSV(processedData);
+            };
+
+            reader.readAsText(file);
+        }
+
+        function processData(csvText) {
+            const rows = csvText.split('\n');
+            const processedRows = rows.map(row => {
+                const columns = row.split(',');
+                // Example processing: convert all text to uppercase
+                return columns.map(col => col.toUpperCase()).join(',');
+            });
+            return processedRows.join('\n');
+        }
+
+        function downloadCSV(data) {
+            const blob = new Blob([data], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const downloadLink = document.getElementById('downloadLink');
+            downloadLink.href = url;
+            downloadLink.download = 'processed_data.csv';
+            downloadLink.style.display = 'block';
+            downloadLink.innerText = 'Download Processed CSV';
+        }
+    </script>
+    </body>
+</html>
