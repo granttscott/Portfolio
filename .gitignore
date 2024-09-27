@@ -1,4 +1,7 @@
+# macOS specific files
+.DS_Store
 
+5.4+API+Authentication
 # Logs
 logs
 *.log
