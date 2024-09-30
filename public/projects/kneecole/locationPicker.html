@@ -30,7 +30,7 @@
         <a id="downloadLink" style="display:none;">Download Processed CSV</a>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
         <script>
-            function processExcel() {
+                        function processExcel() {
                 const input = document.getElementById('excelFileInput');
                 if (!input.files.length) {
                     alert('Please select an excel file to upload.');
@@ -38,7 +38,24 @@
                 }
 
                 const file = input.files[0];
-                processData(file);
+                
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[sheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+                    // Check headers
+                    if (jsonData[0][0] !== 'Location' || jsonData[0][1] !== 'Created By') {
+                        alert('Please double check your file. A1 should be a title that says "Location". B1 should be a title that says "Created By"');
+                        return;
+                    }
+
+                    processData(file);
+                };
+                reader.readAsArrayBuffer(file);
             }
 
             function processData(excelFile) {
