@@ -12,15 +12,34 @@
     </head>
 
     <body>
-        <button type="submit" id="noAuth" onclick="window.location.href='/noAuth'">No Auth</button>
+        <form action="/search" method="get">
+            <input type="text" name="query" placeholder="Search..." required>
+            <select name="category" required>
+                <option value="works">Works</option>
+                <option value="outputs">Outputs</option>
+                <option value="data-providers">Data Providers</option>
+                <option value="journals">Journals</option>
+            </select>
+            <button type="submit">Search</button>
+        </form>
       
         <div class="response-area">
-          <p>
-            <%=content%>
-          </p>
-        </div>
+          <% if (papers && papers.length > 0) { %>
+              <% papers.forEach(paper => { %>
+                  <div class="title-border">
+                      <p><%= paper.title %></p>
+                      <p class="subjects"><%= paper.subjects.join(", ") %></p>
+                      <a href="/more?issn=<%= paper.issn %>" target="_blank" class="view-journal-button">View journal</a>
+                  </div>
+              <% }) %>
+          <% } else { %>
+              <p><%= content %></p>
+          <% } %>
+      </div>
+      </body>
+      <footer>
         <div class="citation">
           <h3>Citation</h3>
           <p>Knoth, P., Herrmannova, D., Cancellieri, M. et al. CORE: A Global Aggregation Service for Open Access Papers. Nature Scientific Data 10, 366 (2023). <a href="https://doi.org/10.1038/s41597-023-02208-w">https://doi.org/10.1038/s41597-023-02208-w</a></p>
         </div>
-      </body>
+      </footer>
