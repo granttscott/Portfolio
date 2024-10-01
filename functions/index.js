@@ -1,5 +1,7 @@
 import express from "express";
 import axios from "axios";
+import { https } from 'firebase-functions';
+
 // import path from "path";
 // import { fileURLToPath } from 'url';
 
@@ -57,3 +59,5 @@ app.get("/", (req, res) => {
   app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
   });
+
+  export const api = https.onRequest(app);
