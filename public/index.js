@@ -14,14 +14,14 @@ const APIKey = "YgQwynm1XsNz9KAok4rB2OJSHvLhq5Up";
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
 
-app.use(express.static("../../public"));
+app.use(express.static("public"));
 
 app.get("/", (req, res) => {
     res.render("index.ejs");
   });
 
   app.get("/papers", async (req, res) => {
-    res.render("papers.ejs", { content: "Please find a paper." });
+    res.render("papers.ejs", { papers: [], content: "Please find a paper." });
   });
 
   app.get("/search", async (req, res) => {
