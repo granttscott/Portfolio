@@ -7,10 +7,10 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import { onRequest } from "firebase-functions/v2/https";
-import { logger } from "firebase-functions";
-import express from "express";
-import axios from "axios";
+const { onRequest } = require("firebase-functions/v2/https");
+const { logger } = require("firebase-functions");
+const express = require("express");
+const axios = require("axios");
 
 const app = express();
 const port = 3000;
@@ -38,8 +38,18 @@ app.get("/search", async (req, res) => {
       url: item.identifiers.find(id => id.startsWith('url:')).split('url:')[1],
       issn: item.identifiers.find(id => id.startsWith('issn:')).split('issn:')[1]
     }));
+        // Log the search results
+        logger.info('Search results', {
+          entityType,
+          resultCount: papers.length,
+          papers: papers
+        });
     res.render("papers.ejs", { papers });
   } catch (error) {
+    logger.error('Search error', {
+      entityType,
+      error: error.message
+    });
     res.status(404).send(error.message);
   }
 });
@@ -58,7 +68,7 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-export const api = onRequest(app);
+exports.api = onRequest(app);
 // exports.helloWorld = onRequest((request, response) => {
 //   logger.info("Hello logs!", {structuredData: true});
 //   response.send("Hello from Firebase!");
