@@ -30,8 +30,16 @@ app.get("/papers", async (req, res) => {
 
 app.get("/search", async (req, res) => {
   const entityType = req.query.category;
+  const searchQuery = req.query.query;
   try {
-    const result = await axios.get(`${API_URL}/v3/search/${entityType}/`);
+    const result = await axios.get(`${API_URL}/v3/search/${entityType}/`, {
+      params: {
+        q: searchQuery
+      },
+      headers: {
+        'Authorization': `Bearer ${APIKey}`
+      }
+    });
     const papers = result.data.results.map(item => ({
       title: item.title,
       subjects: item.subjects,
