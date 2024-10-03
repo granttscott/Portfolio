@@ -32,7 +32,7 @@ app.get("/search", async (req, res) => {
   const entityType = req.query.category;
   const searchQuery = req.query.query;
   try {
-    const result = await axios.get(`${API_URL}/v3/search/${entityType}/`, {
+    const result = await axios.get(`${API_URL}/v3/search/works/`, {
       params: {
         q: searchQuery
       },
@@ -42,16 +42,18 @@ app.get("/search", async (req, res) => {
     });
     const papers = result.data.results.map(item => ({
       title: item.title,
-      subjects: item.subjects,
-      url: item.identifiers.find(id => id.startsWith('url:')).split('url:')[1],
-      issn: item.identifiers.find(id => id.startsWith('issn:')).split('issn:')[1]
+      abstract: item.abstract,
+      yearPublished: item.yearPublished,
+      downloadUrl: item.downloadUrl,
+      documentType: item.documentType,
+      readerUrl: item.links.find(link => link.type === "reader")?.url
     }));
         // Log the search results
-        logger.info('Search results', {
-          entityType,
-          resultCount: papers.length,
-          papers: papers
-        });
+        // logger.info('Search results', {
+        //   entityType,
+        //   resultCount: papers.length,
+        //   papers: papers
+        // });
     res.render("papers.ejs", { papers });
   } catch (error) {
     logger.error('Search error', {

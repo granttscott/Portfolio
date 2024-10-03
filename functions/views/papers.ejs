@@ -26,14 +26,23 @@
         </form>
       
         <div class="response-area">
-          <% if (papers && papers.length > 0) { %>
-              <% papers.forEach(paper => { %>
-                  <div class="title-border">
-                      <p><%= paper.title %></p>
-                      <p class="subjects"><%= paper.subjects.join(", ") %></p>
-                      <a href="/more?issn=<%= paper.issn %>" target="_blank" class="view-journal-button">View journal</a>
-                  </div>
-              <% }) %>
+            <% if (papers && papers.length > 0) { %>
+                <% papers.forEach(paper => { %>
+                    <div class="paper-card">
+                        <h2><%= paper.title %></h2>
+                        <p class="abstract"><%= paper.abstract %></p>
+                        <p class="year">Year Published: <%= paper.yearPublished %></p>
+                        <p class="document-type">Document Type: <%= paper.documentType %></p>
+                        <div class="paper-links">
+                            <% if (paper.downloadUrl) { %>
+                                <a href="<%= paper.downloadUrl %>" target="_blank" class="download-button">Download PDF</a>
+                            <% } %>
+                            <% if (paper.readerUrl) { %>
+                                <a href="<%= paper.readerUrl %>" target="_blank" class="reader-button">Read Online</a>
+                            <% } %>
+                        </div>
+                    </div>
+                <% }) %>
           <% } else { %>
             <p>No results found. Please try a different search.</p>
           <% } %>
