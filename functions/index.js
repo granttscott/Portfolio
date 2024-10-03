@@ -31,15 +31,23 @@ app.get("/papers", async (req, res) => {
 app.get("/search", async (req, res) => {
   const entityType = req.query.category;
   const searchQuery = req.query.query;
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const offset = (page - 1) * limit;
+
   try {
     const result = await axios.get(`${API_URL}/v3/search/works/`, {
       params: {
-        q: searchQuery
+        q: searchQuery,
+        scroll: true,
+        offset: offset,
+        limit: limit
       },
       headers: {
         'Authorization': `Bearer ${APIKey}`
       }
     });
+
     const papers = result.data.results.map(item => ({
       title: item.title,
       abstract: item.abstract,
@@ -48,13 +56,17 @@ app.get("/search", async (req, res) => {
       documentType: item.documentType,
       readerUrl: item.links.find(link => link.type === "reader")?.url
     }));
-        // Log the search results
-        // logger.info('Search results', {
-        //   entityType,
-        //   resultCount: papers.length,
-        //   papers: papers
-        // });
-    res.render("papers.ejs", { papers });
+
+    const totalResults = result.data.totalHits;
+    const totalPages = Math.ceil(totalResults / limit);
+
+    res.render("papers.ejs", { 
+      papers,
+      currentPage: page,
+      totalPages: totalPages,
+      searchQuery: searchQuery,
+      entityType: entityType
+    });
   } catch (error) {
     logger.error('Search error', {
       entityType,

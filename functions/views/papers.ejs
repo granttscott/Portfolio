@@ -13,15 +13,9 @@
 
     <body>
         <button onclick="window.location.href = '/' "class="back">Home</button>
-    <hr>
+        <hr>
         <form action="/search" method="get">
-            <input type="text" name="query" placeholder="Search..." required>
-            <select name="category" required>
-                <option value="works">Works</option>
-                <option value="outputs">Outputs</option>
-                <option value="data-providers">Data Providers</option>
-                <option value="journals">Journals</option>
-            </select>
+            <input type="text" name="query" placeholder="Search..." required value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
             <button type="submit">Search</button>
         </form>
       
