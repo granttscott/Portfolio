@@ -93,7 +93,7 @@
                     const newWorksheet = XLSX.utils.aoa_to_sheet(resultData);
                     const newWorkbook = XLSX.utils.book_new();
                     XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, 'Sampled Data');
-                    XLSX.writeFile(newWorkbook, 'dOuBLeChEk.xlsx');
+                    XLSX.writeFile(newWorkbook, 'PROCESS-AUDIT-OUTPUT.xlsx');
                 };
                 reader.readAsArrayBuffer(excelFile);
             }
