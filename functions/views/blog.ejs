@@ -24,12 +24,12 @@
         </div>
 
         <div class="posts">
-            <% if (typeof posts !== 'undefined' && posts.length > 0) { %>
+            <% if (posts && posts.length > 0) { %>
                 <% posts.forEach(post => { %>
                     <div class="post">
                         <h3><%= post.name %></h3>
                         <p><%= post.content %></p>
-                        <small>Posted on: <%= post.date %></small>
+                        <small>Posted on: <%= post.date ? post.date.toDate().toLocaleString() : 'Unknown' %></small>
                         <div class="post-actions">
                             <a href="/edit-post/<%= post.id %>" class="edit-btn">Edit</a>
                             <form action="/delete-post/<%= post.id %>" method="POST">

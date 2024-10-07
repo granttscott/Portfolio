@@ -11,6 +11,8 @@ const { onRequest } = require("firebase-functions/v2/https");
 const { logger } = require("firebase-functions");
 const express = require("express");
 const axios = require("axios");
+const admin = require('firebase-admin');
+const serviceAccount = require('./portfolio-36f4a-firebase-adminsdk-8aezx-323b27e1a3.json');
 // const fs = require('fs');
 const path = require('path');
 
@@ -20,6 +22,10 @@ const API_URL = "https://api.core.ac.uk";
 
 const APIKey = "YgQwynm1XsNz9KAok4rB2OJSHvLhq5Up";
 
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+const db = admin.firestore();
 app.use(express.static("public"));
 
 // app.get('/css/styles.css', (req, res) => {
@@ -42,6 +48,26 @@ app.get("/projects", (req, res) => {
 });
 app.get("/design", (req, res) => {
   const filePath = path.join(__dirname, 'public', 'projects', 'design.html');
+  res.sendFile(filePath);
+});
+
+app.get("/drum", (req, res) => {
+  const filePath = path.join(__dirname, 'public', 'projects', 'drum', 'index.html');
+  res.sendFile(filePath);
+});
+
+app.get("/simon", (req, res) => {
+  const filePath = path.join(__dirname, 'public', 'projects', 'simon', 'index.html');
+  res.sendFile(filePath);
+});
+
+app.get("/locationPicker", (req, res) => {
+  const filePath = path.join(__dirname, 'public', 'projects', 'nicole', 'locationPicker.html');
+  res.sendFile(filePath);
+});
+
+app.get("/rps", (req, res) => {
+  const filePath = path.join(__dirname, 'public', 'projects', 'rps.html');
   res.sendFile(filePath);
 });
 
@@ -99,9 +125,66 @@ app.get("/search", async (req, res) => {
 
 app.get("/blog", async (req, res) => {
   try {
-    res.render("blog.ejs");
+    const postsSnapshot = await db.collection('posts').orderBy('date', 'desc').get();
+    const posts = postsSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    res.render("blog.ejs", { posts });
   } catch (error) {
-    res.status(404).send(error.message);
+    console.error("Error fetching posts:", error);
+    res.status(500).send("Error fetching posts", error);
+  }
+});
+
+app.post("/add-post", express.urlencoded({ extended: true }), async (req, res) => {
+  try {
+    const { name, content } = req.body;
+    await db.collection('posts').add({
+      name,
+      content,
+      date: admin.firestore.FieldValue.serverTimestamp()
+    });
+    res.redirect('/blog');
+  } catch (error) {
+    console.error("Error adding post:", error);
+    res.status(500).send("Error adding post");
+  }
+});
+
+app.post("/delete-post/:id", async (req, res) => {
+  try {
+    await db.collection('posts').doc(req.params.id).delete();
+    res.redirect('/blog');
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    res.status(500).send("Error deleting post");
+  }
+});
+
+app.get("/edit-post/:id", async (req, res) => {
+  try {
+    const postDoc = await db.collection('posts').doc(req.params.id).get();
+    if (!postDoc.exists) {
+      res.status(404).send("Post not found");
+    } else {
+      const post = { id: postDoc.id, ...postDoc.data() };
+      res.render("edit-post.ejs", { post });
+    }
+  } catch (error) {
+    console.error("Error fetching post for edit:", error);
+    res.status(500).send("Error fetching post for edit");
+  }
+});
+
+app.post("/update-post/:id", express.urlencoded({ extended: true }), async (req, res) => {
+  try {
+    const { name, content } = req.body;
+    await db.collection('posts').doc(req.params.id).update({ name, content });
+    res.redirect('/blog');
+  } catch (error) {
+    console.error("Error updating post:", error);
+    res.status(500).send("Error updating post");
   }
 });
 
