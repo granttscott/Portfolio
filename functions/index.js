@@ -11,6 +11,8 @@ const { onRequest } = require("firebase-functions/v2/https");
 const { logger } = require("firebase-functions");
 const express = require("express");
 const axios = require("axios");
+// const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const port = 3000;
@@ -20,8 +22,27 @@ const APIKey = "YgQwynm1XsNz9KAok4rB2OJSHvLhq5Up";
 
 app.use(express.static("public"));
 
+// app.get('/css/styles.css', (req, res) => {
+//   const cssPath = path.join(__dirname, 'public', 'css', 'styles.css');
+//   fs.readFile(cssPath, 'utf8', (err, data) => {
+//     if (err) {
+//       res.status(404).send('CSS file not found');
+//     } else {
+//       res.setHeader('Content-Type', 'text/css');
+//       res.send(data);
+//     }
+//   });
+// });
+
 app.get("/", (req, res) => {
   res.render("index.ejs");
+});
+app.get("/projects", (req, res) => {
+  res.render("projects.ejs");
+});
+app.get("/design", (req, res) => {
+  const filePath = path.join(__dirname, 'public', 'projects', 'design.html');
+  res.sendFile(filePath);
 });
 
 app.get("/papers", async (req, res) => {
@@ -72,6 +93,14 @@ app.get("/search", async (req, res) => {
       entityType,
       error: error.message
     });
+    res.status(404).send(error.message);
+  }
+});
+
+app.get("/blog", async (req, res) => {
+  try {
+    res.render("blog.ejs");
+  } catch (error) {
     res.status(404).send(error.message);
   }
 });
