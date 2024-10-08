@@ -1,5 +1,11 @@
 {
   "projects": {
     "default": "portfolio-36f4a"
+  },
+  "targets": {},
+  "etags": {
+    "portfolio-36f4a": {
+      "extensionInstances": {}
+    }
   }
 }
