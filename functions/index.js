@@ -22,8 +22,10 @@ const API_URL = "https://api.core.ac.uk";
 
 const APIKey = "YgQwynm1XsNz9KAok4rB2OJSHvLhq5Up";
 
+
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://portfolio-36f4a-default-rtdb.firebaseio.com"
 });
 const db = admin.firestore();
 app.use(express.static("public"));
@@ -125,15 +127,18 @@ app.get("/search", async (req, res) => {
 
 app.get("/blog", async (req, res) => {
   try {
+    console.log("Attempting to fetch posts...");
     const postsSnapshot = await db.collection('posts').orderBy('date', 'desc').get();
+    console.log("Posts snapshot received:", postsSnapshot);
     const posts = postsSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     }));
+    console.log("Processed posts:", posts);
     res.render("blog.ejs", { posts });
   } catch (error) {
     console.error("Error fetching posts:", error);
-    res.status(500).send("Error fetching posts", error);
+    res.status(500).send("Error fetching posts: " + error.message);
   }
 });
 
@@ -198,12 +203,22 @@ app.get("/more", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+app.post("/save-location-audit", async (req, res) => {
+  try {
+    const emailLocationsMap = req.body;
+    
+    // Save to Firestore
+    await db.collection('locationAudits').add({
+      data: emailLocationsMap,
+      timestamp: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    res.json({ message: 'Data saved successfully' });
+  } catch (error) {
+    console.error("Error saving location audit:", error);
+    res.status(500).json({ error: 'Error saving data' });
+  }
 });
 
 exports.api = onRequest(app);
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+

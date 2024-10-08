@@ -21,82 +21,111 @@
             background-color: var(--primary-color);
         }
     </style>
-
-    <body>
-        <button onclick="window.location.href = '/' "class="back">Home</button>
-        <header><h1 class="header">Location Picker</h1></header>
-        <input type="file" id="excelFileInput" accept=".xlsx" />
-        <button onclick="processExcel()" class="btn-primary">Process</button>
-        <a id="downloadLink" style="display:none;">Download Processed CSV</a>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
-        <script>
-                        function processExcel() {
-                const input = document.getElementById('excelFileInput');
-                if (!input.files.length) {
-                    alert('Please select an excel file to upload.');
-                    return;
-                }
-
-                const file = input.files[0];
-                
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const sheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[sheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-                    // Check headers
-                    if (jsonData[0][0] !== 'Location' || jsonData[0][1] !== 'Created By') {
-                        alert('Please double check your file. A1 should be a title that says "Location". B1 should be a title that says "Created By"');
-                        return;
-                    }
-
-                    processData(file);
-                };
-                reader.readAsArrayBuffer(file);
+<body>
+    <button onclick="window.location.href = '/' "class="back">Home</button>
+    <header><h1 class="header">Location Picker</h1></header>
+    <input type="file" id="excelFileInput" accept=".xlsx" />
+    <button onclick="processData()" class="btn-primary">Process</button>
+    <a id="downloadLink" style="display:none;">Download Processed CSV</a>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <script>
+        function processData() {
+            const fileInput = document.getElementById('excelFileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select an Excel file first.');
+                return;
             }
 
-            function processData(excelFile) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const sheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[sheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-                    const emailLocationsMap = new Map();
+                const emailLocationsMap = {};
 
-                    // Skip header row
-                    jsonData.slice(1).forEach(row => {
-                        if (row.length >= 2) {
-                            const location = row[0].trim();
-                            const email = row[1].trim();
-                            if (!emailLocationsMap.has(email)) {
-                                emailLocationsMap.set(email, []);
-                            }
-                            emailLocationsMap.get(email).push(location);
+                // Skip header row
+                jsonData.slice(1).forEach(row => {
+                    if (row.length >= 2) {
+                        const location = row[0].trim();
+                        const email = row[1].trim();
+                        if (!emailLocationsMap[email]) {
+                            emailLocationsMap[email] = [];
                         }
-                    });
+                        emailLocationsMap[email].push(location);
+                    }
+                });
 
-                    const resultData = [['Location', 'Created By']];
-                    emailLocationsMap.forEach((locations, email) => {
-                        const sampleSize = Math.ceil(locations.length * 0.1);
-                        const sampledLocations = locations.sort(() => 0.5 - Math.random()).slice(0, sampleSize);
-                        sampledLocations.forEach(location => {
-                            resultData.push([location, email]);
-                        });
-                    });
+                // Sample 10% of locations for each email
+                Object.keys(emailLocationsMap).forEach(email => {
+                    const locations = emailLocationsMap[email];
+                    const sampleSize = Math.ceil(locations.length * 0.1);
+                    emailLocationsMap[email] = locations
+                        .sort(() => 0.5 - Math.random())
+                        .slice(0, sampleSize);
+                });
 
-                    const newWorksheet = XLSX.utils.aoa_to_sheet(resultData);
-                    const newWorkbook = XLSX.utils.book_new();
-                    XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, 'Sampled Data');
-                    XLSX.writeFile(newWorkbook, 'PROCESS-AUDIT-OUTPUT.xlsx');
-                };
-                reader.readAsArrayBuffer(excelFile);
+                // Send data to server
+                fetch('/save-location-audit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(emailLocationsMap),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Create and download Excel file
+                    createAndDownloadExcel(emailLocationsMap);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('Error saving data.');
+                });
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function createAndDownloadExcel(emailLocationsMap) {
+            // Create a new workbook
+            const wb = XLSX.utils.book_new();
+            
+            // Convert the emailLocationsMap to an array of arrays
+            const data = [['Email', 'Locations']];
+            Object.entries(emailLocationsMap).forEach(([email, locations]) => {
+                data.push([email, locations.join(', ')]);
+            });
+
+            // Create a worksheet
+            const ws = XLSX.utils.aoa_to_sheet(data);
+
+            // Add the worksheet to the workbook
+            XLSX.utils.book_append_sheet(wb, ws, "Sampled Locations");
+
+            // Generate XLSX file and create a download link
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+            function s2ab(s) {
+                const buf = new ArrayBuffer(s.length);
+                const view = new Uint8Array(buf);
+                for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+                return buf;
             }
-        </script>
-    </body>
+            const blob = new Blob([s2ab(wbout)], { type: "application/octet-stream" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'PROCESS-AUDIT-OUTPUT.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }, 0);
+        }
+    </script>
+</body>
 </html>
