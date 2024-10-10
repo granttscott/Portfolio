@@ -29,7 +29,7 @@
                     <div class="post">
                         <h3><%= post.name %></h3>
                         <p><%= post.content %></p>
-                        <small>Posted on: <%= post.date ? post.date.toDate().toLocaleString() : 'Unknown' %></small>
+                        <small>Posted on: <%= post.date ? new Date(post.date.toDate()).toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }) : 'Unknown' %></small>
                         <div class="post-actions">
                             <a href="/edit-post/<%= post.id %>" class="edit-btn">Edit</a>
                             <form action="/delete-post/<%= post.id %>" method="POST">

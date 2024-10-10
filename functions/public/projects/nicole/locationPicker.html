@@ -37,7 +37,7 @@
                 alert('Please select an Excel file first.');
                 return;
             }
-
+    
             const reader = new FileReader();
             reader.onload = function (e) {
                 const data = new Uint8Array(e.target.result);
@@ -45,42 +45,43 @@
                 const sheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[sheetName];
                 const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-                const emailLocationsMap = {};
-
+    
+                const emailLocationsMap = new Map();
+    
                 // Skip header row
                 jsonData.slice(1).forEach(row => {
                     if (row.length >= 2) {
                         const location = row[0].trim();
                         const email = row[1].trim();
-                        if (!emailLocationsMap[email]) {
-                            emailLocationsMap[email] = [];
+                        if (!emailLocationsMap.has(email)) {
+                            emailLocationsMap.set(email, []);
                         }
-                        emailLocationsMap[email].push(location);
+                        emailLocationsMap.get(email).push(location);
                     }
                 });
-
+    
                 // Sample 10% of locations for each email
-                Object.keys(emailLocationsMap).forEach(email => {
-                    const locations = emailLocationsMap[email];
+                const sampledData = new Map();
+                emailLocationsMap.forEach((locations, email) => {
                     const sampleSize = Math.ceil(locations.length * 0.1);
-                    emailLocationsMap[email] = locations
+                    const sampledLocations = locations
                         .sort(() => 0.5 - Math.random())
                         .slice(0, sampleSize);
+                    sampledData.set(email, sampledLocations);
                 });
-
+    
                 // Send data to server
                 fetch('/save-location-audit', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(emailLocationsMap),
+                    body: JSON.stringify(Object.fromEntries(sampledData)),
                 })
                 .then(response => response.json())
                 .then(data => {
                     // Create and download Excel file
-                    createAndDownloadExcel(emailLocationsMap);
+                    createAndDownloadExcel(sampledData);
                 })
                 .catch((error) => {
                     console.error('Error:', error);
@@ -89,42 +90,27 @@
             };
             reader.readAsArrayBuffer(file);
         }
-
-        function createAndDownloadExcel(emailLocationsMap) {
+    
+        function createAndDownloadExcel(sampledData) {
             // Create a new workbook
             const wb = XLSX.utils.book_new();
             
-            // Convert the emailLocationsMap to an array of arrays
-            const data = [['Email', 'Locations']];
-            Object.entries(emailLocationsMap).forEach(([email, locations]) => {
-                data.push([email, locations.join(', ')]);
+            // Convert the sampledData to an array of arrays
+            const data = [['Location', 'Created By']];
+            sampledData.forEach((locations, email) => {
+                locations.forEach(location => {
+                    data.push([location, email]);
+                });
             });
-
+    
             // Create a worksheet
             const ws = XLSX.utils.aoa_to_sheet(data);
-
+    
             // Add the worksheet to the workbook
             XLSX.utils.book_append_sheet(wb, ws, "Sampled Locations");
-
+    
             // Generate XLSX file and create a download link
-            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-            function s2ab(s) {
-                const buf = new ArrayBuffer(s.length);
-                const view = new Uint8Array(buf);
-                for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
-                return buf;
-            }
-            const blob = new Blob([s2ab(wbout)], { type: "application/octet-stream" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'PROCESS-AUDIT-OUTPUT.xlsx';
-            document.body.appendChild(a);
-            a.click();
-            setTimeout(() => {
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-            }, 0);
+            XLSX.writeFile(wb, 'PROCESS-AUDIT-OUTPUT.xlsx');
         }
     </script>
 </body>

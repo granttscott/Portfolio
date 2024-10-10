@@ -220,5 +220,39 @@ app.post("/save-location-audit", async (req, res) => {
   }
 });
 
+app.post("/save-score", express.json(), async (req, res) => {
+  try {
+    const { name, score } = req.body;
+    await db.collection('leaderboard').add({
+      name,
+      score,
+      date: admin.firestore.FieldValue.serverTimestamp()
+    });
+    res.json({ message: 'Score saved successfully' });
+  } catch (error) {
+    console.error("Error saving score:", error);
+    res.status(500).json({ error: 'Error saving score' });
+  }
+});
+
+app.get("/get-leaderboard", async (req, res) => {
+  try {
+    const leaderboardSnapshot = await db.collection('leaderboard')
+      .orderBy('score', 'desc')
+      .limit(10)
+      .get();
+    
+    const leaderboard = leaderboardSnapshot.docs.map(doc => ({
+      name: doc.data().name,
+      score: doc.data().score
+    }));
+    
+    res.json(leaderboard);
+  } catch (error) {
+    console.error("Error fetching leaderboard:", error);
+    res.status(500).json({ error: 'Error fetching leaderboard' });
+  }
+});
+
 exports.api = onRequest(app);
 
